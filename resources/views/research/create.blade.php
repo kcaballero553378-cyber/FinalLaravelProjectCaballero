@@ -2,24 +2,102 @@
 
 @section('content')
 
-<div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+<div class="min-h-screen bg-gray-100 py-12">
 
-    <h2 class="text-xl font-bold mb-4">Add Research</h2>
+    <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-md border p-10">
 
-    <form method="POST" action="{{ route('research.store') }}">
-        @csrf
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">
+            Add Research
+        </h2>
 
-        <input type="text" name="title" placeholder="Title" class="w-full mb-2 p-2 border">
-        <input type="text" name="author" placeholder="Author" class="w-full mb-2 p-2 border">
-        <input type="text" name="year" placeholder="Year" class="w-full mb-2 p-2 border">
-        <input type="text" name="category" placeholder="Category" class="w-full mb-2 p-2 border">
+        @if(session('success'))
+            <div class="mb-6 bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded-lg">
+                {{ session('success') }}
+            </div>
+        @endif
 
-        <textarea name="abstract" placeholder="Abstract" class="w-full mb-2 p-2 border"></textarea>
+        @if ($errors->any())
+            <div class="mb-6 bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-lg">
 
-        <button class="bg-green-500 text-white px-4 py-2 rounded">
-            Save
-        </button>
-    </form>
+                <strong>Please input the following fields:</strong>
+
+                <ul class="mt-2 list-disc list-inside text-sm">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+
+            </div>
+        @endif
+
+        <!-- 🔥 IMPORTANT: enctype ADDED -->
+        <form method="POST"
+              action="{{ route('research.store') }}"
+              enctype="multipart/form-data"
+              class="space-y-4">
+
+            @csrf
+
+            <!-- TITLE -->
+            <div>
+                <label class="text-sm text-gray-600">Title</label>
+                <input type="text" name="title"
+                       value="{{ old('title') }}"
+                       class="w-full mt-1 p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+                       placeholder="Enter research title">
+            </div>
+
+            <!-- AUTHOR -->
+            <div>
+                <label class="text-sm text-gray-600">Author</label>
+                <input type="text" name="author"
+                       value="{{ old('author') }}"
+                       class="w-full mt-1 p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+                       placeholder="Enter author name">
+            </div>
+
+            <!-- YEAR -->
+            <div>
+                <label class="text-sm text-gray-600">Year</label>
+                <input type="text" name="year"
+                       value="{{ old('year') }}"
+                       class="w-full mt-1 p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+                       placeholder="e.g. 2026">
+            </div>
+
+            <!-- CATEGORY -->
+            <div>
+                <label class="text-sm text-gray-600">Category</label>
+                <input type="text" name="category"
+                       value="{{ old('category') }}"
+                       class="w-full mt-1 p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+                       placeholder="e.g. Education, IT, Science">
+            </div>
+
+            <!-- ABSTRACT -->
+            <div>
+                <label class="text-sm text-gray-600">Abstract</label>
+                <textarea name="abstract" rows="5"
+                          class="w-full mt-1 p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+                          placeholder="Enter research abstract">{{ old('abstract') }}</textarea>
+            </div>
+
+            <!-- 🔥 FILE UPLOAD ADDED -->
+            <div>
+                <label class="text-sm text-gray-600">Upload PDF (optional)</label>
+                <input type="file" name="file" accept="application/pdf"
+                       class="w-full mt-1 p-3 border rounded-lg bg-gray-50">
+            </div>
+
+            <!-- SUBMIT -->
+            <button type="submit"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition">
+                Save Research
+            </button>
+
+        </form>
+
+    </div>
 
 </div>
 

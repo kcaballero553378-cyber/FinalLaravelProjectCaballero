@@ -13,21 +13,80 @@
 
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
 
-                    <!-- Dashboard -->
-                    <a href="{{ route('dashboard') }}"
-                       class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium
-                       {{ request()->routeIs('dashboard') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500' }}">
-                        Dashboard
-                    </a>
+                    <!-- DASHBOARD -->
+                   <a href="{{ route('dashboard') }}"
+                        class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium
+                        {{ request()->is('dashboard') || request()->is('admin/dashboard') || request()->is('researcher/dashboard') || request()->is('user/dashboard') || request()->is('reviewer/dashboard')
+                            ? 'border-indigo-500 text-gray-900'
+                             : 'border-transparent text-gray-500' }}">
+                             Dashboard
+</a>
 
-                    <!-- Research -->
-                    <a href="{{ route('research.index') }}"
-                       class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium
-                       {{ request()->routeIs('research.*') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500' }}">
-                        Research
-                    </a>
+                    @php
+                        $role = strtolower(auth()->user()->role);
+                    @endphp
+
+                    <!-- ===================== -->
+                    <!-- RESEARCH LIST (NON-ADMIN ONLY) -->
+                    <!-- ===================== -->
+                    @if($role !== 'admin')
+                        <a href="{{ route('research.index') }}"
+                           class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium
+                           {{ request()->routeIs('research.index') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500' }}">
+                            Research List
+                        </a>
+                    @endif
+
+
+                    <!-- ===================== -->
+                    <!-- RESEARCHER MENU -->
+                    <!-- ===================== -->
+                    @if($role === 'researcher')
+
+                        <a href="{{ route('research.create') }}"
+                           class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium
+                           {{ request()->routeIs('research.create') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500' }}">
+                            + Create
+                        </a>
+
+                        <a href="{{ route('research.my') }}"
+                           class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium
+                           {{ request()->routeIs('research.my') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500' }}">
+                            My Research
+                        </a>
+
+                    @endif
+
+
+                    <!-- ===================== -->
+                    <!-- REVIEWER MENU -->
+                    <!-- ===================== -->
+                    @if($role === 'reviewer')
+
+                        <a href="{{ route('reviewer.research') }}"
+                           class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium
+                           {{ request()->routeIs('reviewer.research') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500' }}">
+                            Pending Research
+                        </a>
+
+                    @endif
+
+
+                    <!-- ===================== -->
+                    <!-- ADMIN MENU -->
+                    <!-- ===================== -->
+                    @if($role === 'admin')
+
+                        <a href="{{ route('research.index') }}"
+                           class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium
+                           {{ request()->routeIs('research.index') ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500' }}">
+                            Manage Research
+                        </a>
+
+                    @endif
 
                 </div>
+
             </div>
 
             <!-- RIGHT SIDE -->
@@ -35,16 +94,14 @@
 
                 <div class="flex items-center space-x-4">
 
-                    <!-- ROLE DISPLAY -->
                     <span class="text-sm text-gray-700">
                         {{ Auth::user()->name }} ({{ Auth::user()->role }})
                     </span>
 
-                    <!-- LOGOUT -->
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit"
-                            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
+                                class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
                             Logout
                         </button>
                     </form>

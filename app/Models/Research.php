@@ -8,11 +8,14 @@ class Research extends Model
 {
     protected $table = 'research';
 
-    protected $fillable = [
-        'title',
-        'author',
-        'year',
-        'category',
-        'abstract'
-    ];
+  protected $fillable = [
+    'title',
+    'author',
+    'year',
+    'category',
+    'abstract',
+    'status',
+    'file',
+    'user_id',
+];
 }
