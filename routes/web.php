@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ResearchController;
+use App\Http\Controllers\AdminUserController;
 use App\Models\Research;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -10,6 +12,17 @@ use App\Models\Research;
 |--------------------------------------------------------------------------
 */
 Route::get('/', function () {
+    if (auth()->check()) {
+        return match (auth()->user()->role) {
+            'admin'      => redirect('/admin/dashboard'),
+            'researcher' => redirect('/researcher/dashboard'),
+            'reviewer'   => redirect('/reviewer/dashboard'),
+            'guest'      => redirect('/guest/dashboard'),
+            'user'       => redirect('/guest/dashboard'),
+            default      => abort(403),
+        };
+    }
+
     return view('auth.login');
 });
 
@@ -20,7 +33,7 @@ Route::get('/', function () {
 */
 Route::get('/set-role/{role}', function ($role) {
 
-    if (!in_array($role, ['admin', 'user', 'researcher', 'reviewer'])) {
+    if (!in_array($role, ['admin', 'guest', 'researcher', 'reviewer'])) {
         abort(404);
     }
 
@@ -48,11 +61,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
 
         return match (auth()->user()->role) {
-            'admin' => redirect('/admin/dashboard'),
+            'admin'      => redirect('/admin/dashboard'),
             'researcher' => redirect('/researcher/dashboard'),
-            'reviewer' => redirect('/reviewer/dashboard'),
-            'user' => redirect('/user/dashboard'),
-            default => abort(403),
+            'reviewer'   => redirect('/reviewer/dashboard'),
+            'guest'      => redirect('/guest/dashboard'),
+            'user'       => redirect('/guest/dashboard'),
+            default      => abort(403),
         };
 
     })->name('dashboard');
@@ -63,8 +77,8 @@ Route::middleware(['auth'])->group(function () {
     | DASHBOARDS
     |--------------------------------------------------------------------------
     */
-    Route::get('/user/dashboard', fn() => view('user.dashboard'))
-        ->middleware('role:user');
+    Route::get('/guest/dashboard', fn() => view('guest.dashboard'))
+        ->middleware('role:guest');
 
     Route::get('/researcher/dashboard', fn() => view('researcher.dashboard'))
         ->middleware('role:researcher');
@@ -75,12 +89,12 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | REVIEWER DASHBOARD (FIXED WITH COUNTS)
+    | REVIEWER DASHBOARD
     |--------------------------------------------------------------------------
     */
     Route::get('/reviewer/dashboard', function () {
 
-        $pending = Research::where('status', 'pending')->count();
+        $pending  = Research::where('status', 'pending')->count();
         $approved = Research::where('status', 'approved')->count();
         $rejected = Research::where('status', 'rejected')->count();
 
@@ -158,7 +172,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/research/{id}/approve', function ($id) {
 
         $research = Research::findOrFail($id);
-        $research->status = 'approved';
+        $research->status  = 'approved';
+        $research->remarks = request('remarks'); // ✅ save remarks
         $research->save();
 
         return back()->with('success', 'Research approved');
@@ -170,7 +185,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/research/{id}/reject', function ($id) {
 
         $research = Research::findOrFail($id);
-        $research->status = 'rejected';
+        $research->status  = 'rejected';
+        $research->remarks = request('remarks'); // ✅ save remarks
         $research->save();
 
         return back()->with('success', 'Research rejected');
@@ -181,11 +197,29 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | ADMIN ACTIONS
+    | ADMIN ACTIONS — RESEARCH
     |--------------------------------------------------------------------------
     */
     Route::delete('/research/{id}', [ResearchController::class, 'destroy'])
         ->name('research.destroy')
+        ->middleware('role:admin');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ADMIN — USER MANAGEMENT
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/admin/users', [AdminUserController::class, 'index'])
+        ->name('admin.users.index')
+        ->middleware('role:admin');
+
+    Route::patch('/admin/users/{id}/role', [AdminUserController::class, 'updateRole'])
+        ->name('admin.users.updateRole')
+        ->middleware('role:admin');
+
+    Route::delete('/admin/users/{id}', [AdminUserController::class, 'destroy'])
+        ->name('admin.users.destroy')
         ->middleware('role:admin');
 
 
@@ -198,10 +232,10 @@ Route::middleware(['auth'])->group(function () {
 
         $user = auth()->user();
 
-        $roles = ['user', 'researcher', 'reviewer', 'admin'];
+        $roles = ['guest', 'researcher', 'reviewer', 'admin'];
 
         $current = array_search($user->role, $roles);
-        $next = ($current + 1) % count($roles);
+        $next    = ($current + 1) % count($roles);
 
         $user->role = $roles[$next];
         $user->save();

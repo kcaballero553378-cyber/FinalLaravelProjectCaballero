@@ -46,8 +46,8 @@ class User extends Authenticatable
         return $this->role === 'reviewer';
     }
 
-    public function isPublic()
+    public function isGuest()  // renamed from isPublic
     {
-        return $this->role === 'user';
+        return $this->role === 'guest';  // renamed from 'user'
     }
 }

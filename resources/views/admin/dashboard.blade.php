@@ -4,18 +4,17 @@
 
 <div class="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-10">
 
-    
+    {{-- HEADER --}}
     <div class="mb-10">
         <h1 class="text-4xl font-bold text-gray-800">
             👑 Admin Dashboard
         </h1>
-
         <p class="text-gray-600 mt-2 text-lg">
             Welcome back, {{ auth()->user()->name }}. Manage your system efficiently.
         </p>
     </div>
 
-    
+    {{-- STAT CARDS --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
         <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
@@ -35,7 +34,7 @@
 
     </div>
 
-    
+    {{-- SYSTEM OVERVIEW --}}
     <div class="mt-10 bg-white p-8 rounded-2xl shadow">
 
         <h2 class="text-xl font-semibold text-gray-800 mb-4">
@@ -45,7 +44,7 @@
         <div class="grid md:grid-cols-2 gap-6 text-gray-700">
 
             <div class="space-y-2">
-                <p>✔ Manage user roles (User / Researcher / Reviewer / Admin)</p>
+                <p>✔ Manage user roles (Guest / Researcher / Reviewer / Admin)</p>
                 <p>✔ Monitor system activity</p>
                 <p>✔ Maintain platform integrity</p>
             </div>
@@ -60,7 +59,23 @@
 
     </div>
 
-    
+    {{-- QUICK ACTIONS --}}
+    <div class="mt-10 bg-white p-8 rounded-2xl shadow">
+
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">
+            Quick Actions
+        </h2>
+
+        <div class="flex gap-4">
+            <a href="{{ route('admin.users.index') }}"
+               class="inline-block bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition font-medium">
+                👥 Manage Users
+            </a>
+        </div>
+
+    </div>
+
+    {{-- FOOTER --}}
     <div class="mt-10 text-center text-gray-500 text-sm">
         Research Management System © {{ date('Y') }}
     </div>

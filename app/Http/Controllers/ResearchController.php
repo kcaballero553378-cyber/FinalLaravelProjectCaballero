@@ -190,9 +190,17 @@ class ResearchController extends Controller
     |--------------------------------------------------------------------------
     */
     public function show($id)
-    {
-        $research = Research::findOrFail($id);
+{
+    $research = Research::findOrFail($id);
 
-        return view('research.show', compact('research'));
+    $user = auth()->user();
+
+    // Researchers can only view their own research if it's pending or rejected
+    // They CAN view any approved research
+    if ($user->isResearcher() && $research->user_id !== $user->id && $research->status !== 'approved') {
+        abort(403, 'You are not allowed to view this research.');
     }
+
+    return view('research.show', compact('research'));
+}
 }

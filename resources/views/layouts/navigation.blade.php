@@ -14,13 +14,13 @@
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
 
                     <!-- DASHBOARD -->
-                   <a href="{{ route('dashboard') }}"
+                    <a href="{{ route('dashboard') }}"
                         class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium
-                        {{ request()->is('dashboard') || request()->is('admin/dashboard') || request()->is('researcher/dashboard') || request()->is('user/dashboard') || request()->is('reviewer/dashboard')
+                        {{ request()->is('dashboard') || request()->is('admin/dashboard') || request()->is('researcher/dashboard') || request()->is('guest/dashboard') || request()->is('reviewer/dashboard')
                             ? 'border-indigo-500 text-gray-900'
-                             : 'border-transparent text-gray-500' }}">
-                             Dashboard
-</a>
+                            : 'border-transparent text-gray-500' }}">
+                        Dashboard
+                    </a>
 
                     @php
                         $role = strtolower(auth()->user()->role);
@@ -79,8 +79,14 @@
 
                         <a href="{{ route('research.index') }}"
                            class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium
-                           {{ request()->routeIs('research.index') ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500' }}">
+                           {{ request()->routeIs('research.index') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500' }}">
                             Manage Research
+                        </a>
+
+                        <a href="{{ route('admin.users.index') }}"
+                           class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium
+                           {{ request()->routeIs('admin.users.*') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500' }}">
+                            Manage Users
                         </a>
 
                     @endif
