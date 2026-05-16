@@ -1,81 +1,178 @@
-<x-guest-layout>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RMS — Register</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<div class="min-h-screen flex">
 
-<div class="container d-flex justify-content-center align-items-center min-vh-100"
-     style="background: linear-gradient(135deg, #f8fafc, #e2e8f0);">
+    {{-- LEFT SIDE — BRANDING --}}
+    <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 flex-col justify-between p-12">
 
-    <div class="card border-0 shadow-lg rounded-4 p-4" style="width: 450px;">
-
-        <!-- HEADER -->
-        <div class="text-center mb-4">
-            <div class="mb-2 fs-2">📚</div>
-            <h3 class="fw-bold">Research Management System</h3>
-            <p class="text-muted">Create your account to start managing research</p>
+        {{-- LOGO --}}
+        <div>
+            <span class="text-white text-2xl font-bold tracking-tight">📚 RMS</span>
         </div>
 
-        <!-- SUCCESS MESSAGE -->
-        @if (session('status'))
-            <div class="alert alert-success">
-                {{ session('status') }}
+        {{-- CENTER TEXT --}}
+        <div>
+            <h1 class="text-5xl font-bold text-white leading-tight mb-4">
+                Join the<br>Research<br>Community
+            </h1>
+            <p class="text-blue-200 text-lg leading-relaxed">
+                Create an account and start submitting, reviewing, and managing academic research.
+            </p>
+
+            {{-- FEATURE PILLS --}}
+            <div class="mt-8 space-y-3">
+                <div class="flex items-center gap-3">
+                    <span class="bg-white/20 text-white text-xs px-3 py-1 rounded-full">✍️ Submit Research</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="bg-white/20 text-white text-xs px-3 py-1 rounded-full">🔍 Peer Review System</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="bg-white/20 text-white text-xs px-3 py-1 rounded-full">👑 Admin Dashboard</span>
+                </div>
             </div>
-        @endif
+        </div>
 
-        <!-- ERROR MESSAGE -->
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+        {{-- FOOTER --}}
+        <div class="text-blue-300 text-xs">
+            Research Management System © {{ date('Y') }}
+        </div>
 
-        <!-- FORM -->
-        <form method="POST" action="{{ route('register') }}">
-            @csrf
+    </div>
 
-            <!-- Name -->
-            <div class="mb-3">
-                <label class="form-label">Full Name</label>
-                <input type="text" name="name" value="{{ old('name') }}" class="form-control rounded-3" required>
-            </div>
+    {{-- RIGHT SIDE — FORM --}}
+    <div class="w-full lg:w-1/2 flex items-center justify-center bg-gray-50 px-6 py-12">
 
-            <!-- Email -->
-            <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input type="email" name="email" value="{{ old('email') }}" class="form-control rounded-3" required>
-            </div>
+        <div class="w-full max-w-md">
 
-            <!-- Password -->
-            <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" name="password" class="form-control rounded-3" required>
-            </div>
-
-            <!-- Confirm Password -->
-            <div class="mb-3">
-                <label class="form-label">Confirm Password</label>
-                <input type="password" name="password_confirmation" class="form-control rounded-3" required>
+            {{-- MOBILE LOGO --}}
+            <div class="lg:hidden text-center mb-8">
+                <span class="text-blue-600 text-3xl font-bold">📚 RMS</span>
+                <p class="text-gray-500 text-sm mt-1">Research Management System</p>
             </div>
 
-            <!-- Button -->
-            <button class="btn btn-success w-100 py-2 rounded-3">
-                Register
-            </button>
+            {{-- HEADING --}}
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-800">Create account</h2>
+                <p class="text-gray-500 mt-1 text-sm">Fill in the details below to get started</p>
+            </div>
 
-        </form>
+            {{-- SESSION STATUS --}}
+            @if (session('status'))
+                <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm">
+                    {{ session('status') }}
+                </div>
+            @endif
 
-        <!-- LOGIN LINK -->
-        <div class="text-center mt-3">
-            <a href="{{ route('login') }}" class="text-decoration-none">
-                Already have an account? Login
+            {{-- ERRORS --}}
+            @if ($errors->any())
+                <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                    <ul class="list-disc list-inside space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            {{-- FORM --}}
+            <form method="POST" action="{{ route('register') }}" class="space-y-4">
+                @csrf
+
+                {{-- NAME --}}
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Full Name
+                    </label>
+                    <input type="text"
+                           name="name"
+                           value="{{ old('name') }}"
+                           placeholder="Juan dela Cruz"
+                           required
+                           autofocus
+                           autocomplete="name"
+                           class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition shadow-sm">
+                </div>
+
+                {{-- EMAIL --}}
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Email Address
+                    </label>
+                    <input type="email"
+                           name="email"
+                           value="{{ old('email') }}"
+                           placeholder="you@example.com"
+                           required
+                           autocomplete="email"
+                           class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition shadow-sm">
+                </div>
+
+                {{-- PASSWORD --}}
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Password
+                    </label>
+                    <input type="password"
+                           name="password"
+                           placeholder="••••••••"
+                           required
+                           autocomplete="new-password"
+                           class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition shadow-sm">
+                </div>
+
+                {{-- CONFIRM PASSWORD --}}
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Confirm Password
+                    </label>
+                    <input type="password"
+                           name="password_confirmation"
+                           placeholder="••••••••"
+                           required
+                           autocomplete="new-password"
+                           class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition shadow-sm">
+                </div>
+
+                {{-- REGISTER BUTTON --}}
+                <button type="submit"
+                        class="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold py-3 rounded-xl transition text-sm shadow-md hover:shadow-lg">
+                    Create Account →
+                </button>
+
+            </form>
+
+            {{-- DIVIDER --}}
+            <div class="flex items-center my-6">
+                <div class="flex-1 border-t border-gray-200"></div>
+                <span class="px-4 text-xs text-gray-400">or</span>
+                <div class="flex-1 border-t border-gray-200"></div>
+            </div>
+
+            {{-- LOGIN LINK --}}
+            <a href="{{ route('login') }}"
+               class="block w-full text-center border border-gray-200 hover:border-blue-400 hover:text-blue-600 text-gray-600 font-semibold py-3 rounded-xl transition text-sm bg-white shadow-sm">
+                Already have an account? Sign In
             </a>
+
+            {{-- MOBILE FOOTER --}}
+            <p class="lg:hidden text-center text-xs text-gray-400 mt-8">
+                Research Management System © {{ date('Y') }}
+            </p>
+
         </div>
 
     </div>
 
 </div>
 
-</x-guest-layout>
+</body>
+</html>
