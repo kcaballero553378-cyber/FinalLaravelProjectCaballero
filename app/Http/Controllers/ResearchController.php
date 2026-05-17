@@ -65,27 +65,36 @@ class ResearchController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'author' => 'required|string|max:255',
-            'year' => 'required|numeric',
+            'title'    => 'required|string|max:255',
+            'author'   => 'required|string|max:255',
+            'year'     => 'required|numeric',
             'category' => 'required|string|max:255',
             'abstract' => 'required|string',
-            'file' => 'nullable|mimes:pdf|max:2048',
+            'file'     => 'nullable|mimes:pdf|max:2048',
         ]);
+
+        // ✅ DUPLICATE CHECK — prevent same user submitting same title twice
+        if (Research::where('title', $request->title)
+                    ->where('user_id', auth()->id())
+                    ->exists()) {
+            return back()
+                ->with('error', 'You already submitted a research with this title.')
+                ->withInput();
+        }
 
         $filePath = $request->hasFile('file')
             ? $request->file('file')->store('research_files', 'public')
             : null;
 
         Research::create([
-            'title' => $request->title,
-            'author' => $request->author,
-            'year' => $request->year,
-            'category' => strtolower(trim($request->category)), // CLEAN DATA FIX
+            'title'    => $request->title,
+            'author'   => $request->author,
+            'year'     => $request->year,
+            'category' => strtolower(trim($request->category)),
             'abstract' => $request->abstract,
-            'status' => 'pending',
-            'file' => $filePath,
-            'user_id' => auth()->id(),
+            'status'   => 'pending',
+            'file'     => $filePath,
+            'user_id'  => auth()->id(),
         ]);
 
         return redirect()->route('research.my')
@@ -139,12 +148,12 @@ class ResearchController extends Controller
         }
 
         $request->validate([
-            'title' => 'required|string|max:255',
-            'author' => 'required|string|max:255',
-            'year' => 'required|numeric',
+            'title'    => 'required|string|max:255',
+            'author'   => 'required|string|max:255',
+            'year'     => 'required|numeric',
             'category' => 'required|string|max:255',
             'abstract' => 'required|string',
-            'file' => 'nullable|mimes:pdf|max:2048',
+            'file'     => 'nullable|mimes:pdf|max:2048',
         ]);
 
         if ($request->hasFile('file')) {
@@ -152,12 +161,12 @@ class ResearchController extends Controller
         }
 
         $research->update([
-            'title' => $request->title,
-            'author' => $request->author,
-            'year' => $request->year,
-            'category' => strtolower(trim($request->category)), // CLEAN DATA FIX
+            'title'    => $request->title,
+            'author'   => $request->author,
+            'year'     => $request->year,
+            'category' => strtolower(trim($request->category)),
             'abstract' => $request->abstract,
-            'file' => $research->file,
+            'file'     => $research->file,
         ]);
 
         return redirect()->route('research.my')
@@ -173,14 +182,16 @@ class ResearchController extends Controller
     public function destroy($id)
     {
         $research = Research::findOrFail($id);
+        $user     = auth()->user();
 
-        if ($research->user_id !== auth()->id()) {
-            abort(403);
+        // ✅ Admin can delete any research
+        // ✅ Researcher can only delete their own
+        if ($user->role === 'admin' || $research->user_id === $user->id) {
+            $research->delete();
+            return back()->with('success', 'Research deleted successfully!');
         }
 
-        $research->delete();
-
-        return back()->with('success', 'Research deleted successfully!');
+        abort(403, 'You are not allowed to delete this research.');
     }
 
 
@@ -190,17 +201,17 @@ class ResearchController extends Controller
     |--------------------------------------------------------------------------
     */
     public function show($id)
-{
-    $research = Research::findOrFail($id);
+    {
+        $research = Research::findOrFail($id);
 
-    $user = auth()->user();
+        $user = auth()->user();
 
-    // Researchers can only view their own research if it's pending or rejected
-    // They CAN view any approved research
-    if ($user->isResearcher() && $research->user_id !== $user->id && $research->status !== 'approved') {
-        abort(403, 'You are not allowed to view this research.');
+        // Researchers can only view their own research if it's pending or rejected
+        // They CAN view any approved research
+        if ($user->isResearcher() && $research->user_id !== $user->id && $research->status !== 'approved') {
+            abort(403, 'You are not allowed to view this research.');
+        }
+
+        return view('research.show', compact('research'));
     }
-
-    return view('research.show', compact('research'));
-}
 }

@@ -135,6 +135,15 @@ Route::middleware(['auth'])->group(function () {
         ->name('research.update')
         ->middleware('role:researcher');
 
+    /*
+    |--------------------------------------------------------------------------
+    | DELETE RESEARCH — Admin OR Researcher (own only)
+    |--------------------------------------------------------------------------
+    */
+    Route::delete('/research/{id}', [ResearchController::class, 'destroy'])
+        ->name('research.destroy')
+        ->middleware('role:admin,researcher'); // ✅ FIXED: was admin only
+
 
     /*
     |--------------------------------------------------------------------------
@@ -173,7 +182,7 @@ Route::middleware(['auth'])->group(function () {
 
         $research = Research::findOrFail($id);
         $research->status  = 'approved';
-        $research->remarks = request('remarks'); // ✅ save remarks
+        $research->remarks = request('remarks');
         $research->save();
 
         return back()->with('success', 'Research approved');
@@ -186,23 +195,13 @@ Route::middleware(['auth'])->group(function () {
 
         $research = Research::findOrFail($id);
         $research->status  = 'rejected';
-        $research->remarks = request('remarks'); // ✅ save remarks
+        $research->remarks = request('remarks');
         $research->save();
 
         return back()->with('success', 'Research rejected');
 
     })->name('research.reject')
       ->middleware('role:reviewer');
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | ADMIN ACTIONS — RESEARCH
-    |--------------------------------------------------------------------------
-    */
-    Route::delete('/research/{id}', [ResearchController::class, 'destroy'])
-        ->name('research.destroy')
-        ->middleware('role:admin');
 
 
     /*
