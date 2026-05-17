@@ -7,7 +7,7 @@
     {{-- HEADER --}}
     <div class="mb-8">
         <h1 class="text-4xl font-bold text-purple-800">
-            🧑‍⚖️ Reviewer Dashboard
+            👩‍⚖️ Reviewer Dashboard
         </h1>
 
         <p class="text-gray-600 mt-2">
