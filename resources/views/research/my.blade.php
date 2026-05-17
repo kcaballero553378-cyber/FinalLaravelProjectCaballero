@@ -73,17 +73,19 @@
                     👁 View
                 </a>
 
-                {{-- ✅ DELETE BUTTON — researcher can delete their own research --}}
-                <form action="{{ route('research.destroy', $research->id) }}"
-                      method="POST"
-                      onsubmit="return confirm('Are you sure you want to delete this research? This cannot be undone.')">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit"
-                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm">
-                        🗑 Delete
-                    </button>
-                </form>
+                {{-- ✅ DELETE BUTTON — only visible when research is still pending --}}
+                @if($research->status === 'pending')
+                    <form action="{{ route('research.destroy', $research->id) }}"
+                          method="POST"
+                          onsubmit="return confirm('Are you sure you want to delete this research? This cannot be undone.')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm">
+                            🗑 Delete
+                        </button>
+                    </form>
+                @endif
 
             </div>
 
